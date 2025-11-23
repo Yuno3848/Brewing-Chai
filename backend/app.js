@@ -2,6 +2,7 @@ import express from 'express';
 import cookie from 'cookie-parser';
 import cors from 'cors';
 import auth from './routes/auth.route.js';
+import ApiError from './utils/ApiError.js';
 
 const app = express();
 
@@ -22,5 +23,20 @@ app.use(
   }),
 );
 
-app.use('/api/brewing-chai/', auth);
+app.use('/auth/brewing-chai', auth);
+
+app.use((err, req, res, next) => {
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json(err.toJSON());
+  }
+
+  console.error('🔥 Unhandled Error:', err);
+
+  return res.status(500).json({
+    statusCode: 500,
+    message: 'Internal Server Error',
+    errors: [err?.message],
+  });
+});
+
 export default app;
