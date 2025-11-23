@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+:root {
+  --chai-light: #f3ecdf;
+  --chai-mid: #e3d5c3;
+  --chai-deep: #d2bfa9;
+  --chai-brown: #92745d;
+  --chai-dark: #6b5242;
+  --chai-text: #5c4a3f;
+  --chai-muted: #7a6658;
+  --chai-cream: #fff8f1;
+  --chai-border: #cdb79e;
+}
+
+/* BUTTONS */
+.btn-chai-primary {
+  @apply text-white font-semibold py-2 px-5 rounded-full shadow-lg transition-transform;
+  background: linear-gradient(to right, var(--chai-brown), var(--chai-dark));
+}
+
+.btn-chai-primary:hover {
+  @apply scale-[1.02] shadow-xl;
+  background: linear-gradient(to right, var(--chai-dark), var(--chai-brown));
+}
+
+.btn-chai-soft {
+  @apply py-2 px-5 rounded-full border transition;
+  background: var(--chai-cream);
+  border-color: var(--chai-border);
+  color: var(--chai-text);
+}
+
+.btn-chai-soft:hover {
+  background: var(--chai-mid);
+}
+
+/* CARD */
+.card-chai {
+  @apply shadow-xl rounded-xl p-6 transition-all;
+  background: rgba(255, 248, 241, 0.8);
+  border: 1px solid var(--chai-border);
+}
+
+/* INPUT */
+.input-chai {
+  @apply w-full px-3 py-2 rounded-lg border outline-none transition;
+  background: rgba(255, 248, 241, 0.8);
+  border-color: var(--chai-border);
+}
+
+.input-chai:focus {
+  border-color: var(--chai-dark);
+}
+
+/* BADGES */
+.badge-chai {
+  @apply text-xs rounded-full px-2 py-1 border;
+  background: var(--chai-mid);
+  border-color: var(--chai-border);
+  color: var(--chai-text);
+}
