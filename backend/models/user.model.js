@@ -59,10 +59,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    otp: {
+    emailVerificationToken: {
       type: String,
     },
-    otpExpiry: {
+    emailVerificationTokenExpiry: {
       type: Date,
     },
     forgotPasswordExpiry: {
@@ -110,10 +110,10 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 userSchema.methods.generateTemporaryToken = function () {
-  const otp = Math.floor(100000 + Math.random() * 999999).toString();
-  this.otp = crypto.createHash('sha256').update(otp).digest('hex');
-  this.otpExpiry = Date.now() + 20 * 60 * 1000;
-  return otp;
+  const unhashedToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto.createHash('sha256').update(unhashedToken).digest('hex');
+  const tokenExpiry = Date.now() + 20 * 60 * 1000;
+  return {unhashedToken, hashedToken,tokenExpiry};
 };
 const User = mongoose.model('User', userSchema);
 export default User;
