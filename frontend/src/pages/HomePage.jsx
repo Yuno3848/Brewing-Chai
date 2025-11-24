@@ -1,12 +1,12 @@
-import React from 'react'
-import Home from '../features/home/ChaiDemyHome'
+import React from "react";
+import Home from "../features/home/pages/ChaiDemyHome";
 
 const HomePage = () => {
   return (
     <div>
-      <Home/>
+      <Home />
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;
