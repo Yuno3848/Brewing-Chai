@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import auth from "../api/auth.api";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
 const SignIn = () => {
   const {
@@ -14,6 +14,7 @@ const SignIn = () => {
 
   const [verifyOption, setVerifyOption] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     try {
@@ -21,6 +22,7 @@ const SignIn = () => {
       if (response?.data) {
         toast.success(response?.data);
         console.log("📚 Sign-in success:", response.data);
+        navigate("/");
       } else {
         if (response?.error == "Email is not verified!") {
           setVerifyOption(true);
@@ -62,7 +64,7 @@ const SignIn = () => {
       <div className="backdrop-blur-md bg-gradient-to-b from-[#FFF6ED]/70 to-[#F5E5D1]/70 shadow-xl border border-[#D1BFA3] rounded-3xl px-8 py-10 w-full max-w-md transition-all duration-300 space-y-8 hover:shadow-[0_0_30px_rgba(209,191,163,0.35)] hover:scale-[1.01]">
         {/* HEADER */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold text-[#5C4A3F]">Login</h2>
+          <h2 className="text-3xl font-bold text-[#5C4A3F]">Sign In</h2>
           <p className="text-[#7A6658] text-sm">
             “Login & power your study with chai”
           </p>
@@ -112,29 +114,33 @@ const SignIn = () => {
           </div>
 
           {/* BUTTON */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-[#92745D] to-[#6B5242] hover:from-[#7A5E4A] hover:to-[#4E3B31] text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.02] shadow-lg hover:shadow-2xl disabled:opacity-50"
-          >
-            {isSubmitting ? "📖 Brewing focus..." : "📖 Start Study Session"}
-          </button>
-
-          {verifyOption && (
+          <div className="flex flex-col justify-center items-center gap-3">
+            
             <button
-              type="button"
-              disabled={isResending}
-              onClick={handleResendEmail}
+              type="submit"
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-[#92745D] to-[#6B5242] hover:from-[#7A5E4A] hover:to-[#4E3B31] text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.02] shadow-lg hover:shadow-2xl disabled:opacity-50"
             >
-              {isResending ? "📨 Sending..." : "Resend Verification Link"}
+              {isSubmitting ? "📖 Brewing focus..." : "📖 Start Study Session"}
             </button>
-          )}
-
-          {/* FOOTER */}
-          <p className="text-center text-[#7A6658] text-xs italic">
-            “Ek cup chai, aur study drive high!”
-          </p>
+            {verifyOption && (
+              <button
+                type="button"
+                disabled={isResending}
+                onClick={handleResendEmail}
+                className="w-full bg-gradient-to-r from-[#92745D] to-[#6B5242] hover:from-[#7A5E4A] hover:to-[#4E3B31] text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.02] shadow-lg hover:shadow-2xl disabled:opacity-50"
+              >
+                {isResending ? "📨 Sending..." : "Resend Verification Link"}
+              </button>
+            )}
+            <Link to="/signup" className=" text-[#7A6658] font-bold">
+              Don't have an account ?
+            </Link>
+            {/* FOOTER */}
+            <p className="text-center text-[#7A6658] text-xs italic">
+              “Ek cup chai, aur study drive high!”
+            </p>
+          </div>
         </form>
       </div>
     </div>
