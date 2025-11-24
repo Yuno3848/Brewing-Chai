@@ -1,4 +1,5 @@
-import React from 'react'
+import React from "react";
+import { Link } from "react-router";
 
 const Navbar = () => {
   return (
@@ -17,25 +18,29 @@ const Navbar = () => {
       </div>
 
       <nav className="hidden md:flex gap-6 text-[var(--chai-muted)]">
-        <a
+        <Link
           href="#courses"
           className="hover:text-[var(--chai-brown)] transition"
         >
           Courses
-        </a>
-        <a href="#study" className="hover:text-[var(--chai-brown)] transition">
+        </Link>
+        <Link
+          href="#study"
+          className="hover:text-[var(--chai-brown)] transition"
+        >
           Study Space
-        </a>
-        <a
+        </Link>
+        <Link
           href="#community"
           className="hover:text-[var(--chai-brown)] transition"
         >
           Community
-        </a>
+        </Link>
       </nav>
 
       <div className="flex gap-3">
-        <button
+        <Link
+          to="/signin"
           className="
               border border-[var(--chai-border)]
               px-4 py-1.5 rounded-full
@@ -44,7 +49,7 @@ const Navbar = () => {
             "
         >
           Sign In
-        </button>
+        </Link>
         <button
           className="
               px-4 py-1.5 rounded-full
@@ -59,6 +64,6 @@ const Navbar = () => {
       </div>
     </header>
   );
-}
+};
 
-export default Navbar
+export default Navbar;
