@@ -73,7 +73,15 @@ export const signUp = asyncHandler(async (req, res) => {
     { lean: true },
   );
 
-  res.status(201).json(new ApiResponse(201, 'User registered successfully', createdUser));
+  res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        'You have registered successfully. Please verify your email to activate your account.',
+        createdUser,
+      ),
+    );
 });
 
 export const verifyEmail = asyncHandler(async (req, res) => {
