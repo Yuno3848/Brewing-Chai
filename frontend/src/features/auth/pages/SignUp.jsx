@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import auth from "../api/auth.api";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const SignUp = () => {
   const {
@@ -11,19 +12,23 @@ const SignUp = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  const navigate = useNavigate();
+
   const onSubmit = async (data) => {
     try {
       const response = await auth.signUp(data);
       if (response?.data?.success) {
         console.log("🎉 Signup success:", response.data);
-        toast.success(response?.data || "Signed up successfully!")
+
+        toast.success(response?.data?.message || "Signed up successfully!");
+        navigate("/check-email");
       } else {
         console.error("❌ Signup failed:", response.error);
-        toast.error(response?.error || "Failed to Signed up!")
+        toast.error(response?.error || "Failed to Signed up!");
       }
     } catch (error) {
       console.log("error message :", error);
-      toast.error("Something went wrong while signing up!")
+      toast.error("Something went wrong while signing up!");
     }
   };
 
