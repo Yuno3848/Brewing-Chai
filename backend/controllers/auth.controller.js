@@ -16,7 +16,7 @@ export const signUp = asyncHandler(async (req, res) => {
   }
 
   const existingUser = await User.findOne({
-    $or: [{ email }, { firstName }],
+    $or: [{ email }],
   });
 
   if (existingUser) {
@@ -60,18 +60,11 @@ export const signUp = asyncHandler(async (req, res) => {
     html: `<p>Your Verification Link is  http://localhost:5173/verify-email/${unhashedToken}</p>`,
   });
 
-  const createdUser = await User.findById(
-    user.id,
-    {
-      password: 0,
-      otp: 0,
-      otpExpiry: 0,
-      forgotPasswordExpiry: 0,
-      emailVerificationToken: 0,
-      emailVerificationTokenExpiry: 0,
-    },
-    { lean: true },
-  );
+  const createdUser = await User.findById(user._id)
+    .select(
+      '-password -otp -otpExpiry -forgotPasswordExpiry -emailVerificationToken -emailVerificationTokenExpiry',
+    )
+    .lean();
 
   res
     .status(201)
@@ -121,7 +114,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select('-_v -id');
 
   if (!user) {
     throw new ApiError(404, 'Invalid email or password!');
@@ -145,10 +138,11 @@ export const login = asyncHandler(async (req, res) => {
 
   const accessToken = await user.generateAccessToken();
 
+  user.password = undefined;
   return res
     .status(200)
     .cookie('accessToken', accessToken, cookiesOptions)
-    .json(new ApiResponse(200, 'User logged in successfully'));
+    .json(new ApiResponse(200, 'Sign in successfully', user));
 });
 
 export const logOut = asyncHandler(async (req, res) => {
@@ -262,4 +256,22 @@ export const resendVerifyEmail = asyncHandler(async (req, res) => {
   });
 
   return res.status(200).json(new ApiResponse(200, 'Email verification sent successfully!', user));
+});
+
+export const me = asyncHandler(async (req, res) => {
+  const user = req.user.id;
+
+  if (!user || !mongoose.Types.ObjectId.isValid(user.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const userDetails = await User.findById(user).select(
+    '-password -emailVerificationToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -createdAt -updatedAt',
+  );
+
+  if (!userDetails) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'user logged in', userDetails));
 });
