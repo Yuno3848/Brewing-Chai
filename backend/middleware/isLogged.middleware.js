@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cookie from 'cookie-parser';
 
 dotenv.config();
-export const isLogged = async (req, res, next) => {
+const isLogged = async (req, res, next) => {
   try {
     // Check if the request has a cookie with the access token
 
@@ -30,3 +30,5 @@ export const isLogged = async (req, res, next) => {
     });
   }
 };
+
+export default isLogged
