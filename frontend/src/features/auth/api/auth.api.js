@@ -21,7 +21,7 @@ const auth = {
       const responseData = await res.json();
 
       if (!res.ok) {
-        throw new Error(res.message || "Failed to sign up");
+        throw new Error(response.message || "Failed to sign up");
       }
 
       return { data: responseData };
@@ -34,6 +34,7 @@ const auth = {
     try {
       const res = await fetch(`${authUrl}/signIn`, {
         method: "POST",
+        credentials:"include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -45,7 +46,7 @@ const auth = {
       if (!res.ok) {
         throw new Error(resData.message || "Failed to sign up");
       }
-      return { data: resData.message };
+      return { resData };
     } catch (error) {
       return { error: error.message };
     }
@@ -58,7 +59,6 @@ const auth = {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(data),
       });
 
@@ -125,6 +125,22 @@ const auth = {
       return { data: resData.message };
     } catch (error) {
       return { error: error.message };
+    }
+  },
+
+  me: async () => {
+    try {
+      const res = await fetch(`${authUrl}/me`, {
+        method: "GET",
+        credentials:"include",
+      });
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.message || "Failed to fetch user details");
+
+      return data;
+    } catch (error) {
+      throw error;
     }
   },
 };
