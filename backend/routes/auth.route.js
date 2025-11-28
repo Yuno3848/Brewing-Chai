@@ -6,8 +6,10 @@ import {
   verify,
   validateResetPassword,
   validateEmail,
+  validateChangePassword,
 } from '../validators/user.validator.js';
 import {
+  changePassword,
   forgotPassword,
   login,
   me,
@@ -26,5 +28,6 @@ auth.post('/signIn', validate(signIn), login);
 auth.post('/forgot-password', validate(validateEmail), forgotPassword);
 auth.patch('/reset-password/:token', validate(validateResetPassword), resetPassword);
 auth.patch('/resend-verify-email', validate(validateEmail), resendVerifyEmail);
-auth.get("/me", isLogged,me )
+auth.patch('/change-password', isLogged, validate(validateChangePassword), changePassword);
+auth.get('/me', isLogged, me);
 export default auth;

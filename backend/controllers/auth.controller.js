@@ -275,3 +275,38 @@ export const me = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, 'user logged in', userDetails));
 });
+
+export const changePassword = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+  const { password, newPassword, confirmPassword } = req.body;
+
+  if (newPassword != confirmPassword) {
+    throw new ApiError(400, "Password doesn't match");
+  }
+
+  const user = await User.findById(userId).select('-avatar');
+
+  if (!user) {
+    throw new ApiError(400, 'User not found!');
+  }
+
+  const isPassword = await user.comparePassword(password);
+
+  if (!isPassword) {
+    throw new ApiError(400, 'Invalid Password!');
+  }
+
+  if (await user.comparePassword(newPassword)) {
+    throw new ApiError(400, 'New password cannot be the same as old password.');
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+
+  return res.status(201).json(new ApiResponse(201, 'Password changed successfully'));
+});

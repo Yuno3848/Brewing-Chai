@@ -32,4 +32,17 @@ export const validateResetPassword = z.object({
   params: z.object({
     token: z.string().regex(/^[a-f0-9]{64}$/, 'Invalid or malformed verification token'),
   }),
+
+  body: z.object({
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  }),
+});
+
+export const validateChangePassword = z.object({
+  body: z.object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  }),
 });
