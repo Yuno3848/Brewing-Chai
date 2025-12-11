@@ -5,7 +5,6 @@ const CheckEmail = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Read ?email=... from URL if available
   const email = new URLSearchParams(location.search).get("email");
 
   return (
