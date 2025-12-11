@@ -307,6 +307,153 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.password = newPassword;
   await user.save();
 
-
   return res.status(201).json(new ApiResponse(201, 'Password changed successfully'));
+});
+
+export const updateProfileAvatar = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const user = await User.findById(userId).select(
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -createdAt -updatedAt',
+  );
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (!req.file || !req.file.buffer) {
+    throw new ApiError(400, 'Avatar file is required');
+  }
+
+  const avatar = await uploadOnCloudinary(req.file.buffer, req.file.originalname);
+  if (!avatar) {
+    throw new ApiError(500, 'Failed to upload avatar');
+  }
+
+  user.avatar.url = avatar.secure_url;
+  user.avatar.localPath = avatar.public_id;
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Avatar updated successfully', { avatar: user.avatar }));
+});
+
+export const mailDeleteAccount = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const user = await User.findById(userId).select(
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -createdAt -updatedAt',
+  );
+
+  const { unhashedOtp, hashedOtp, OtpExpiry } = user.generateTemporaryOtp();
+
+  user.accountDeleteVerificationToken = hashedOtp;
+  user.accountDeleteVerificationExpiry = OtpExpiry;
+
+  await user.save({ validateBeforeSave: false });
+
+  await sendMail({
+    senderEmail: user.email,
+    subject: 'Permanent account delete confirmation',
+    text: `Account Deletion otp : ${unhashedOtp}`,
+    html: `Account Deletion otp :${unhashedOtp}`,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, `Otp sent to your registered mail : ${user.email}`));
+});
+
+export const userAccountDeleted = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  const { otp } = req.body;
+  console.log('backend otp :', otp);
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const accountDeleteVerificationToken = crypto.createHash('sha256').update(otp).digest('hex');
+
+  const user = await User.findOne({
+    accountDeleteVerificationToken,
+    accountDeleteVerificationExpiry: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(404, 'Failed to delete user account!');
+  }
+
+  await User.findByIdAndDelete(userId);
+
+  return res
+    .status(200)
+    .clearCookie('accessToken')
+    .json(new ApiResponse(200, 'Account deleted successfully!'));
+});
+
+export const basicInfo = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, 'Failed to get user account!');
+  }
+
+  const { firstName, lastName, biography, socialLinks } = req.body;
+
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  if (biography !== undefined) user.biography = biography;
+
+  if (socialLinks !== undefined) {
+    if (!Array.isArray(socialLinks)) {
+      throw new ApiError(400, 'socialLinks must be an array');
+    }
+
+    const allowedPlatforms = ['website', 'facebook', 'instagram', 'linkedin', 'x', 'youtube'];
+
+    const validatedLinks = socialLinks.map((link) => {
+      if (!link.platform || !link.url) {
+        throw new ApiError(400, 'Each social link must include platform and url');
+      }
+
+      if (!allowedPlatforms.includes(link.platform)) {
+        throw new ApiError(400, `Invalid platform: ${link.platform}`);
+      }
+
+      const urlRegex = /^https?:\/\/.*/i;
+      if (!urlRegex.test(link.url)) {
+        throw new ApiError(400, `Invalid URL: ${link.url}`);
+      }
+
+      return {
+        platform: link.platform,
+        url: link.url,
+      };
+    });
+
+    user.socialLinks = validatedLinks;
+  }
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Profile updated successfully!',
+    data: user,
+  });
 });
