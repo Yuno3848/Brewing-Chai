@@ -24,7 +24,7 @@ const SignUp = () => {
         navigate("/check-email");
       } else {
         console.error("❌ Signup failed:", response.error);
-        toast.error(response?.error || "Failed to Signed up!");
+        toast.error("Looks like you already have an account. Please sign in.");
       }
     } catch (error) {
       console.log("error message :", error);
@@ -85,7 +85,6 @@ const SignUp = () => {
             </p>
           </div>
 
-          {/* SECTION: PERSONAL DETAILS */}
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               {/* First Name */}
