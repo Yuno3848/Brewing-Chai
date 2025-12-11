@@ -46,3 +46,19 @@ export const validateChangePassword = z.object({
     confirmPassword: z.string().min(8, 'Password must be at least 8 characters'),
   }),
 });
+
+const socialLinkSchema = z.object({
+  platform: z.enum(['website', 'facebook', 'instagram', 'linkedin', 'x', 'youtube']),
+  url: z.string().url('Invalid URL format').startsWith('http', 'URL must start with http or https'),
+});
+
+
+
+export const validateUpdateProfile = z.object({
+  body: z.object({
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    biography: z.string().min(60, 'This field should be at least 60 words long.'),
+    socialLinks: z.array(socialLinkSchema).optional(),
+  }),
+});
