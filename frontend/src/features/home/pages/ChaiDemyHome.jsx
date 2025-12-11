@@ -4,6 +4,8 @@ import CourseCard from "../components/CourseCard";
 import SectionTitle from "../components/SectionTitle";
 
 const ChaiDemyHome = () => {
+  const date = new Date();
+
   return (
     <div
       className="
@@ -76,43 +78,18 @@ const ChaiDemyHome = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[var(--chai-muted)]">
-                Current Session
-              </p>
-              <h3 className="font-semibold">DSA with Masala Chai</h3>
-            </div>
-            <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700 border border-green-400">
-              On track
-            </span>
-          </div>
-
-          <div className="my-4">
-            <div className="w-full h-2 bg-white rounded-full">
-              <div
-                className="
-                  h-full w-[68%]
-                  bg-gradient-to-r from-[var(--chai-brown)] to-[var(--chai-dark)]
-                  rounded-full
-                "
-              ></div>
-            </div>
-            <div className="flex justify-between text-xs text-[var(--chai-muted)] mt-1">
-              <span>Chapter 4 · Graphs</span>
-              <span>68%</span>
+              <p className="text-sm text-[var(--chai-muted)]">Pomochai</p>
+              <h3 className="font-semibold">Study with Chai</h3>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <MiniCard
               title="Focus Timer"
-              value="25:00"
+              value={`${date.getMinutes()}:${date.getSeconds()}`}
               sub="Chai break after"
             />
-            <MiniCard
-              title="Chai Streak"
-              value="7 days"
-              sub="Don't break the chain ☕"
-            />
+            <MiniCard title="Break" value="10:00" sub="Chai Break ☕" />
           </div>
 
           <div className="flex items-center gap-3 mt-6 text-xs text-[var(--chai-muted)]">
