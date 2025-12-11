@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { lowercase } from 'zod';
 
 dotenv.config();
 const userSchema = new Schema(
@@ -55,6 +56,30 @@ const userSchema = new Schema(
         'Please provide a valid email address',
       ],
     },
+    biography: {
+      type: String,
+      minlength: [60, 'This field should be at least 60 words long.'],
+    },
+
+    socialLinks: [
+      {
+        platform: {
+          type: String,
+          enum: ['website', 'facebook', 'instagram', 'linkedin', 'x', 'youtube'],
+          lowercase: true,
+          trim: true,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+          lowercase: true,
+          trim: true,
+          match: [/^https?:\/\/.*/i, 'Invalid URL format'],
+        },
+      },
+    ],
+
     isEmailVerified: {
       type: Boolean,
       default: false,
@@ -63,6 +88,13 @@ const userSchema = new Schema(
       type: String,
     },
     emailVerificationTokenExpiry: {
+      type: Date,
+    },
+    accountDeleteVerificationToken: {
+      type: String,
+    },
+
+    accountDeleteVerificationExpiry: {
       type: Date,
     },
     forgotPasswordExpiry: {
@@ -75,10 +107,6 @@ const userSchema = new Schema(
     instructorProfile: {
       type: Schema.Types.ObjectId,
       ref: 'instructorProfile',
-    },
-    studentProfile: {
-      type: Schema.Types.ObjectId,
-      ref: 'studentProfile',
     },
   },
   { timestamps: true },
@@ -113,7 +141,19 @@ userSchema.methods.generateTemporaryToken = function () {
   const unhashedToken = crypto.randomBytes(32).toString('hex');
   const hashedToken = crypto.createHash('sha256').update(unhashedToken).digest('hex');
   const tokenExpiry = Date.now() + 20 * 60 * 1000;
-  return {unhashedToken, hashedToken,tokenExpiry};
+  return { unhashedToken, hashedToken, tokenExpiry };
 };
+
+userSchema.methods.generateTemporaryOtp = function () {
+  const unhashedOtp = crypto.randomInt(100000, 1000000).toString();
+
+  const hashedOtp = crypto.createHash('sha256').update(unhashedOtp).digest('hex');
+
+  const OtpExpiry = Date.now() + 2 * 60 * 1000;
+
+  return { unhashedOtp, hashedOtp, OtpExpiry };
+};
+
 const User = mongoose.model('User', userSchema);
+
 export default User;
