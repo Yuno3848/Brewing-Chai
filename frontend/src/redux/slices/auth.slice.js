@@ -13,6 +13,7 @@ export const fetchMe = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await auth.me();
+      console.log("response me:", response?.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error || "failed to fetch user!");
@@ -25,11 +26,12 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.user = action.payload;
+      state.user = { ...state.user, ...action.payload };
       state.isAuthenticated = true;
     },
 
     logout: () => ({ ...initialState }),
+    
   },
 
   extraReducers: (builder) => {
