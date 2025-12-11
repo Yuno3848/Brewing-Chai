@@ -13,10 +13,9 @@ const Navbar = () => {
         flex justify-between items-center px-6 md:px-10 py-4
         bg-[var(--chai-light)]/80 backdrop-blur-md
         border-b border-[var(--chai-border)]
-        sticky top-0 z-30 shadow-sm
+        sticky top-0 z-30 shadow-sm 
       "
     >
-    
       <Link to="/" className="flex items-center gap-2 group">
         <span className="text-2xl group-hover:scale-110 transition duration-200">
           ☕
@@ -32,7 +31,6 @@ const Navbar = () => {
         </h1>
       </Link>
 
-    
       <nav className="hidden md:flex items-center gap-6 text-[var(--chai-muted)]">
         {["courses", "study", "community"].map((link) => (
           <Link
@@ -48,9 +46,7 @@ const Navbar = () => {
         ))}
       </nav>
 
-     
       <div className="relative flex items-center gap-4">
-      
         <Link to="/cart" className="relative hover:scale-105 transition">
           <ShoppingCart
             size={22}
@@ -58,7 +54,6 @@ const Navbar = () => {
           />
         </Link>
 
-      
         {auth ? (
           <div className="relative group">
             <div className="flex border rounded-full overflow-hidden cursor-pointer hover:scale-105 transition">
@@ -69,7 +64,6 @@ const Navbar = () => {
               />
             </div>
 
-          
             <div
               className="
                 absolute right-0  w-64 mt-1 mr-[-100px] bg-white border rounded-xl p-4
@@ -93,7 +87,7 @@ const Navbar = () => {
                   </p>
                 </div>
               </div>
-              <div className="border-t pt-2 space-y-1">
+              <div className="border-t pt-2 space-y-1 flex flex-col">
                 <Link
                   to="/profile"
                   className="text-sm hover:text-[var(--chai-brown)] transition"
@@ -105,6 +99,19 @@ const Navbar = () => {
                   className="text-sm hover:text-[var(--chai-brown)] transition"
                 >
                   Settings
+                </Link>
+                <Link
+                  to="/public-profile"
+                  className="text-sm hover:text-[var(--chai-brown)] transition"
+                >
+                  Public Profile
+                </Link>
+
+                <Link
+                  to="/instructor"
+                  className="text-sm hover:text-[var(--chai-brown)] transition"
+                >
+                  Instructor
                 </Link>
               </div>
             </div>
@@ -123,7 +130,6 @@ const Navbar = () => {
           </Link>
         )}
 
-       
         <Link
           to="/get-started"
           className="
@@ -137,7 +143,6 @@ const Navbar = () => {
           Get Started
         </Link>
 
-      
         <button
           className="md:hidden text-[var(--chai-text)]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -146,7 +151,6 @@ const Navbar = () => {
         </button>
       </div>
 
-     
       {isMenuOpen && (
         <div
           className="
