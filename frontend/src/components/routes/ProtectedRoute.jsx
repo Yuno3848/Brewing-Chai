@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate } from "react-router";
 import { fetchMe } from "../../redux/slices/auth.slice";
 
 const ProtectedRoute = ({ children }) => {
@@ -8,18 +8,20 @@ const ProtectedRoute = ({ children }) => {
   const isLoading = useSelector((state) => state.auth.isLoading);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!user && !isLoading) {
-      dispatch(fetchMe());
-    }
-  }, [user, dispatch, isLoading]);
+  const [hasFetched, setHasFetched] = useState(false);
 
-  if (isLoading) return <div>Loading...</div>;
-  
-  if (!user) {
-    <Navigate to="/signin" replace />;
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      dispatch(fetchMe()).finally(() => setHasFetched(true));
+    } else {
+      setHasFetched(true);
+    }
+  }, [user, dispatch]);
+
+  if (!hasFetched || isLoading) return <div>Loading...</div>;
+
+  if (!user) return <Navigate to="/signin" replace />;
+
   return children;
 };
 
