@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import auth from "../api/auth.api";
 import toast from "react-hot-toast";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../../redux/slices/auth.slice";
 
 const SignIn = () => {
   const {
@@ -14,22 +16,21 @@ const SignIn = () => {
 
   const [verifyOption, setVerifyOption] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     try {
       const response = await auth.signIn(data);
-      if (response?.data) {
-        toast.success(response?.data);
-        console.log("📚 Sign-in success:", response.data);
+      if (response?.resData?.data || response?.resData?.success) {
+        dispatch(setCredentials(response?.resData?.data))
+        toast.success(response?.resData.message || "Sign in successfully");
         navigate("/");
       } else {
         if (response?.error == "Email is not verified!") {
           setVerifyOption(true);
         }
         toast.error(response.error || "Failed to sign in");
-        console.log("else in sign in :", response.error);
-        console.error("🚫 Sign-in failed:", response);
       }
     } catch (error) {
       toast.error("Something went wrong while singing in");
@@ -115,7 +116,6 @@ const SignIn = () => {
 
           {/* BUTTON */}
           <div className="flex flex-col justify-center items-center gap-3">
-            
             <button
               type="submit"
               disabled={isSubmitting}
@@ -133,6 +133,9 @@ const SignIn = () => {
                 {isResending ? "📨 Sending..." : "Resend Verification Link"}
               </button>
             )}
+            <Link to="/forgot-password" className=" text-[#7A6658] font-bold">
+              Forgot Password?
+            </Link>
             <Link to="/signup" className=" text-[#7A6658] font-bold">
               Don't have an account ?
             </Link>
